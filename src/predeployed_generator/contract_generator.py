@@ -2,6 +2,8 @@ import json
 import os
 from web3 import Web3
 
+from __future__ import annotations
+
 
 def to_even_length(hex_string: str) -> str:
     assert hex_string.startswith('0x')
@@ -34,22 +36,26 @@ def next_slot(previous_slot: int) -> int:
 
 
 class ContractGenerator:
-    def __init__(self, artifact_filename: str):
-        artifacts_dir = os.path.join(os.path.dirname(__file__), 'artifacts')
-        artifacts_path = os.path.join(artifacts_dir, artifact_filename)
-        with open(artifacts_path, encoding='utf-8') as fp:
-            contract = json.load(fp)
-            self.bytecode = contract['deployedBytecode']
-            self.abi = contract['abi']
-            self.storage = {}
+    def __init__(self, bytecode: str, balance: int = 0, nonce: int = 0):
+        self.bytecode = bytecode
+        self.balance = balance
+        self.nonce = nonce
+        self.storage = {}
 
-    def generate_contract(self, balance: int = 0, nonce: int = 0) -> dict:
+    def from_hardhat_artifact(artifact_filename: str, balance: int = 0, nonce: int = 0) -> ContractGenerator:
+        with open(artifact_filename, encoding='utf-8') as fp:
+            contract = json.load(fp)
+            return ContractGenerator(contract['deployedBytecode'], balance, nonce)
+
+    def generate(self) -> dict:
         assert isinstance(self.bytecode, str)
         assert isinstance(self.storage, dict)
+        assert isinstance(self.balance, int)
+        assert isinstance(self.nonce, int)
         return {
             'code': self.bytecode,
-            'balance': str(balance),
-            'nonce': str(nonce),
+            'balance': self.balance,
+            'nonce': self.nonce,
             'storage': self.storage
         }
 
