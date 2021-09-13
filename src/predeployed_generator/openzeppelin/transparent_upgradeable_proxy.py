@@ -6,9 +6,9 @@ from ..contract_generator import ContractGenerator
 
 class TransparentUpgradeableProxyGenerator(ContractGenerator):
     ARTIFACT_FILENAME = 'TransparentUpgradeableProxy.json'
-    ROLLBACK_SLOT = int(web3.solidityKeccak(['string'], ['eip1967.proxy.rollback']), 16) - 1
-    IMPLEMENTATION_SLOT = int(web3.solidityKeccak(['string'], ['eip1967.proxy.implementation']), 16) - 1
-    ADMIN_SLOT = int(web3.solidityKeccak(['string'], ['eip1967.proxy.admin']), 16) - 1
+    ROLLBACK_SLOT = int(Web3.solidityKeccak(['string'], ['eip1967.proxy.rollback']), 16) - 1
+    IMPLEMENTATION_SLOT = int(Web3.solidityKeccak(['string'], ['eip1967.proxy.implementation']), 16) - 1
+    ADMIN_SLOT = int(Web3.solidityKeccak(['string'], ['eip1967.proxy.admin']), 16) - 1
 
     def __init__(self, implementation_address: str, admin_address: str, initial_storage: dict):
         artifacts_dir = os.path.join(os.path.dirname(__file__), 'artifacts')
