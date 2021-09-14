@@ -1,6 +1,6 @@
 from web3.auto import w3
 
-from tools.test_openzeppelin import TestOpenzeppelin
+from .tools.test_openzeppelin import TestOpenzeppelin
 from src.predeployed_generator.openzeppelin.proxy_admin_generator import ProxyAdminGenerator
 
 class TestProxyAdminGenerator(TestOpenzeppelin):
