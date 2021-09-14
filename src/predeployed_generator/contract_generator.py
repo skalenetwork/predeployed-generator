@@ -1,8 +1,8 @@
+from __future__ import annotations
+
 import json
 import os
 from web3 import Web3
-
-from __future__ import annotations
 
 
 def to_even_length(hex_string: str) -> str:
@@ -54,8 +54,8 @@ class ContractGenerator:
         assert isinstance(self.nonce, int)
         return {
             'code': self.bytecode,
-            'balance': self.balance,
-            'nonce': self.nonce,
+            'balance': hex(self.balance),
+            'nonce': hex(self.nonce),
             'storage': self.storage
         }
 

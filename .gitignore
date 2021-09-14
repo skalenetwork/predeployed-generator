@@ -1,6 +1,7 @@
 # custom
 /openzeppelin-contracts
-/src/predeployed_generator/artifacts
+/src/predeployed_generator/openzeppelin/artifacts/*
+!/src/predeployed_generator/openzeppelin/artifacts/.keep
 
 # vs code
 .vscode/

@@ -1,7 +1,20 @@
 import json
 import subprocess
 import os
-from sys import stderr
+
+
+class GethInstance:    
+    def __init__(self, geth):
+        self.geth = geth
+    def __enter__(self):
+        return self.geth.pid
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.geth:
+            self.geth.terminate()
+            self.geth.communicate()
+            assert self.geth.returncode == 0
+
+
 
 class TestPredeployed:
     GENESIS_FILENAME = 'genesis.json'
@@ -26,9 +39,12 @@ class TestPredeployed:
         self.geth = subprocess.Popen(['geth', '--datadir', tmpdir, '--dev', '--http'], stderr=subprocess.PIPE, universal_newlines=True)
 
         while True:
+            assert self.geth.poll() is None
             output_line = self.geth.stderr.readline()
             if 'HTTP server started' in output_line:
                 break
+
+        return GethInstance(self.geth)
 
     def stop_geth(self):
         if self.geth:
