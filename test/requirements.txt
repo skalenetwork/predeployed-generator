@@ -1,2 +1,4 @@
-web3
+pylint
 pytest
+pytest-cov
+web3

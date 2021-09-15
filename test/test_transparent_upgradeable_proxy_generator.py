@@ -51,5 +51,5 @@ class TestTransparentUpgradeableProxyGenerator(TestOpenzeppelin):
             assert w3.isConnected()
             
             proxy_admin = w3.eth.contract(address=self.PROXY_ADMIN_ADDRESS, abi=self.get_proxy_admin_abi())
-            assert proxy_admin.functions.getProxyImplementation(self.PROXY_ADDRESS).call() == self.IMPLEMENTATION_ADDRESS
+            assert proxy_admin.functions.getProxyImplementation(self.PROXY_ADDRESS).call() == self.IMPLEMENTATION_ADDRESS 
 
