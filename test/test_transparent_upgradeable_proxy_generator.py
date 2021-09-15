@@ -2,7 +2,7 @@ from web3.auto import w3
 
 from .tools.test_openzeppelin import TestOpenzeppelin
 from src.predeployed_generator.openzeppelin.proxy_admin_generator import ProxyAdminGenerator
-from src.predeployed_generator.openzeppelin.transparent_upgradeable_proxy import TransparentUpgradeableProxyGenerator
+from src.predeployed_generator.openzeppelin.transparent_upgradeable_proxy_generator import TransparentUpgradeableProxyGenerator
 
 class TestTransparentUpgradeableProxyGenerator(TestOpenzeppelin):
     OWNER_ADDRESS = '0xd200000000000000000000000000000000000000'

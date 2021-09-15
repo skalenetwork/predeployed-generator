@@ -40,30 +40,12 @@ def add_0x(bytes_string: str) -> str:
     return '0x' + bytes_string
 
 
-def calculate_mapping_value_slot(slot: int, key: any, key_type: str) -> int:
-    '''Calculate slot in smart contract storage where value of the key in mapping is stored'''
-    if key_type == 'address':
-        return calculate_mapping_value_slot(slot, int(key, 16).to_bytes(32, 'big'), 'bytes32')
-    return int.from_bytes(w3.solidityKeccak([key_type, 'uint256'], [key, slot]), 'big')
-
-
-def calculate_array_value_slot(slot: int, index: int) -> int:
-    '''Calculate slot in smart contract storage where value of the array in the index is stored'''
-    return int.from_bytes(w3.solidityKeccak(['uint256'], [slot]), 'big') + index
-
-
-def next_slot(previous_slot: int) -> int:
-    '''Return next slot in smart contract storage'''
-    return previous_slot + 1
-
-
 class ContractGenerator:
     '''Generate smart contract allocation in a genesis block'''
     def __init__(self, bytecode: str, balance: int = 0, nonce: int = 0):
         self.bytecode = bytecode
         self.balance = balance
         self.nonce = nonce
-        self.storage = {}
 
     @staticmethod
     def from_hardhat_artifact(
@@ -75,63 +57,73 @@ class ContractGenerator:
             contract = json.load(artifact_file)
             return ContractGenerator(contract['deployedBytecode'], balance, nonce)
 
-    def generate(self) -> dict:
+    def generate(self, **args) -> dict:
+        '''Generate smart contract allocation
+
+        Returns an object in format:
+        {
+            'balance': ... ,
+            'nonce': ... ,
+            'code': ... ,
+            'storage': ...
+        }
+        '''
+        return self._generate(self.generate_storage(**args))
+
+    @staticmethod
+    def generate_storage(**_) -> dict:
+        '''Generate smart contract storage layout
+        based on initial values provided in args
+        '''
+        return {}
+
+    # private
+
+    def _generate(self, storage=None) -> dict:
         '''Produce smart contract allocation object.
 
         It consists of fields 'code', 'balance', 'nonce' and 'storage'
         '''
         assert isinstance(self.bytecode, str)
-        assert isinstance(self.storage, dict)
         assert isinstance(self.balance, int)
         assert isinstance(self.nonce, int)
+        assert isinstance(storage, dict)
         return {
             'code': self.bytecode,
             'balance': hex(self.balance),
             'nonce': hex(self.nonce),
-            'storage': self.storage
+            'storage': storage if storage is not None else {}
         }
 
-    # private
+    @staticmethod
+    def _write_address(storage: dict, slot: int, address: str) -> None:
+        storage[to_even_length(hex(slot))] = address.lower()
 
-    def _write_address(self, slot: int, address: str) -> None:
-        self.storage[to_even_length(hex(slot))] = address.lower()
-
-    def _write_bytes32(self, slot: int, data: bytes) -> None:
+    @staticmethod
+    def _write_bytes32(storage: dict, slot: int, data: bytes) -> None:
         assert len(data) <= 32
-        self.storage[to_even_length(hex(slot))] = to_even_length(add_0x(data.hex()))
+        storage[to_even_length(hex(slot))] = to_even_length(add_0x(data.hex()))
 
-    def _write_uint256(self, slot: int, value: int) -> None:
-        self.storage[to_even_length(hex(slot))] = to_even_length(add_0x(hex(value)))
+    @staticmethod
+    def _write_uint256(storage: dict, slot: int, value: int) -> None:
+        storage[to_even_length(hex(slot))] = to_even_length(add_0x(hex(value)))
 
-    def _setup_role(self, roles_slot: int, role_members_slot: int, role: bytes, accounts: [str]):
-        role_data_slot = calculate_mapping_value_slot(roles_slot, role, 'bytes32')
-        members_slot = role_data_slot
-        role_members_value_slot = calculate_mapping_value_slot(role_members_slot, role, 'bytes32')
-        values_slot = role_members_value_slot
-        indexes_slot = role_members_value_slot + 1
-        self._write_uint256(values_slot, len(accounts))
-        for i, account in enumerate(accounts):
-            members_value_slot = calculate_mapping_value_slot(members_slot, account, 'address')
-            self._write_uint256(members_value_slot, 1)
-            self._write_address(calculate_array_value_slot(values_slot, i), account)
-            self._write_uint256(
-                calculate_mapping_value_slot(indexes_slot, int(account, 16), 'uint256'),
-                i + 1)
-
-    def _write_addresses_array(self, slot: int, values: list) -> None:
-        self._write_uint256(slot, len(values))
+    @staticmethod
+    def _write_addresses_array(storage: dict, slot: int, values: list) -> None:
+        ContractGenerator._write_uint256(storage, slot, len(values))
         for i, address in enumerate(values):
-            address_slot = calculate_array_value_slot(slot, i)
-            self._write_address(address_slot, address)
+            address_slot = ContractGenerator.calculate_array_value_slot(slot, i)
+            ContractGenerator._write_address(storage, address_slot, address)
 
-    def _write_string(self, slot: int, value: str) -> None:
+    @staticmethod
+    def _write_string(storage: dict, slot: int, value: str) -> None:
         binary = value.encode()
         length = len(binary)
         if length < 32:
             binary += (2 * length).to_bytes(32 - length, 'big')
-            self._write_bytes32(slot, binary)
+            ContractGenerator._write_bytes32(storage, slot, binary)
         else:
-            self._write_uint256(slot, 2 * length + 1)
+            ContractGenerator._write_uint256(storage, slot, 2 * length + 1)
 
             def chunks(size, source):
                 for i in range(0, len(source), size):
@@ -140,4 +132,32 @@ class ContractGenerator:
             for index, data in enumerate(chunks(32, binary)):
                 if len(data) < 32:
                     data += int(0).to_bytes(32 - len(data), 'big')
-                self._write_bytes32(calculate_array_value_slot(slot, index), data)
+                ContractGenerator._write_bytes32(
+                    storage,
+                    ContractGenerator.calculate_array_value_slot(slot, index),
+                    data)
+
+    @staticmethod
+    def calculate_mapping_value_slot(slot: int, key: any, key_type: str) -> int:
+        '''Calculate slot in smart contract storage where value of the key in mapping is stored
+        '''
+        if key_type == 'address':
+            return ContractGenerator.calculate_mapping_value_slot(
+                slot,
+                int(key, 16).to_bytes(32, 'big'),
+                'bytes32')
+        return int.from_bytes(w3.solidityKeccak([key_type, 'uint256'], [key, slot]), 'big')
+
+
+    @staticmethod
+    def calculate_array_value_slot(slot: int, index: int) -> int:
+        '''Calculate slot in smart contract storage
+        where value of the array in the index is stored
+        '''
+        return int.from_bytes(w3.solidityKeccak(['uint256'], [slot]), 'big') + index
+
+
+    @staticmethod
+    def next_slot(previous_slot: int) -> int:
+        '''Return next slot in smart contract storage'''
+        return previous_slot + 1
