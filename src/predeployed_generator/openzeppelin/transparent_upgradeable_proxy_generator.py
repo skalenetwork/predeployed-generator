@@ -51,6 +51,3 @@ class TransparentUpgradeableProxyGenerator(OpenzeppelinContractGenerator):
         if initial_storage is not None:
             storage.update(initial_storage)
         return storage
-
-    def get_artifact_filename(self):
-        return self.ARTIFACT_FILENAME
