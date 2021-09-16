@@ -7,19 +7,25 @@ Classes:
     UpgradeableContractGenerator
 '''
 
-# from .openzeppelin.transparent_upgradeable_proxy_generator \
-#     import TransparentUpgradeableProxyGenerator
-# from .contract_generator import ContractGenerator
+from .openzeppelin.transparent_upgradeable_proxy_generator \
+    import TransparentUpgradeableProxyGenerator
+from .contract_generator import ContractGenerator
 
 
-# class UpgradeableContractGenerator(TransparentUpgradeableProxyGenerator):
-#     '''Generates transparent upgradeable proxy based on implementation generator'''
-#     def __init__(
-#             self,
-#             implementation_address: str,
-#             proxy_admin_address,
-#             implementation_generator: ContractGenerator):
-#         super().__init__(
-#             implementation_address,
-#             proxy_admin_address,
-#             implementation_generator.generate()['storage'])
+class UpgradeableContractGenerator(TransparentUpgradeableProxyGenerator):
+    '''Generates transparent upgradeable proxy based on implementation generator'''
+    def __init__(
+            self,
+            implementation_generator: ContractGenerator):
+        super().__init__()
+        self.implementation_generator = implementation_generator
+
+    def generate_storage(self, **kwargs) -> dict:
+        proxy_admin_address = kwargs.pop('proxy_admin_address')
+        implementation_address = kwargs.pop('implementation_address')
+        storage = TransparentUpgradeableProxyGenerator.generate_storage(
+            proxy_admin_address=proxy_admin_address,
+            implementation_address=implementation_address
+        )
+        storage.update(self.implementation_generator.generate(**kwargs))
+        return storage
