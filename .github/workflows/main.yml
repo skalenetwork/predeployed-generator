@@ -45,6 +45,9 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+    - name: Install building tools
+      run: pip3 install -r scripts/requirements.txt
+
     - name: Install testing staff
       run: pip3 install -r test/requirements.txt
 
@@ -57,6 +60,11 @@ jobs:
       env:
         PYTHONPATH: ./
       run: pylint src
+
+    - name: Build pip package
+      env:
+        VERSION: "0.0.0"
+      run: ./scripts/build_package.sh
     
     - name: Run tests
       run: |
