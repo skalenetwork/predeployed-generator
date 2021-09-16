@@ -7,7 +7,7 @@ ARTIFACTS_DIR="src/predeployed_generator/openzeppelin/artifacts/"
 OPENZEPPELIN_DIR="openzeppelin-contracts"
 if [[ ! -d "openzeppelin-contracts" ]]
 then
-    git clone --branch "v$(cat OPENZEPPELIN_CONTRACTS_VERSION)" git@github.com:OpenZeppelin/openzeppelin-contracts.git $OPENZEPPELIN_DIR
+    git clone --branch "v$(cat OPENZEPPELIN_CONTRACTS_VERSION)" https://github.com/OpenZeppelin/openzeppelin-contracts.git $OPENZEPPELIN_DIR
     cd $OPENZEPPELIN_DIR
     npm install
     cd ..

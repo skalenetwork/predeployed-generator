@@ -2,6 +2,7 @@
 /openzeppelin-contracts
 /src/predeployed_generator/openzeppelin/artifacts/*
 !/src/predeployed_generator/openzeppelin/artifacts/.keep
+version.txt
 
 # vs code
 .vscode/
