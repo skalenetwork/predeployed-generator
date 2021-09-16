@@ -32,3 +32,6 @@ class ProxyAdminGenerator(OpenzeppelinContractGenerator):
             ProxyAdminGenerator.OWNER_SLOT,
             owner_address)
         return storage
+
+    def get_artifact_filename(self):
+        return self.ARTIFACT_FILENAME

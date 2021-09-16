@@ -11,8 +11,8 @@ class TestProxyAdminGenerator(TestOpenzeppelin):
     def test_owner(self, tmpdir):
         owner_address = '0xd200000000000000000000000000000000000000'
         proxy_admin_address = '0xd200000000000000000000000000000000000001'
-        generator = ProxyAdminGenerator(owner_address)
-        with self.run_geth(tmpdir, self.generate_genesis({proxy_admin_address: generator.generate()})):
+        generator = ProxyAdminGenerator()
+        with self.run_geth(tmpdir, self.generate_genesis({proxy_admin_address: generator.generate(owner_address=owner_address)})):
             assert w3.isConnected()
             
             proxy_admin = w3.eth.contract(address=proxy_admin_address, abi=self.get_proxy_admin_abi())

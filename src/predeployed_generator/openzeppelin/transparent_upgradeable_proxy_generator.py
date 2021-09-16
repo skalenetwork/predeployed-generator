@@ -52,7 +52,5 @@ class TransparentUpgradeableProxyGenerator(OpenzeppelinContractGenerator):
             storage.update(initial_storage)
         return storage
 
-    def ololo(self):
-        '''trololo
-        '''
-        print(f'OLOLO, {self.ARTIFACT_FILENAME}')
+    def get_artifact_filename(self):
+        return self.ARTIFACT_FILENAME

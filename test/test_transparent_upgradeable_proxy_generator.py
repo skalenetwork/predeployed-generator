@@ -19,18 +19,18 @@ class TestTransparentUpgradeableProxyGenerator(TestOpenzeppelin):
         return self.get_abi('ProxyAdmin')
 
     def prepare_genesis(self):
-        proxy_admin_generator = ProxyAdminGenerator(self.OWNER_ADDRESS)
-        proxy_generator = TransparentUpgradeableProxyGenerator(
-            self.IMPLEMENTATION_ADDRESS,
-            self.PROXY_ADMIN_ADDRESS,
-            proxy_admin_generator.generate()['storage'])
+        proxy_admin_generator = ProxyAdminGenerator()
+        proxy_generator = TransparentUpgradeableProxyGenerator()
 
         genesis = self.generate_genesis({
-            self.PROXY_ADMIN_ADDRESS: proxy_admin_generator.generate(),
-            self.PROXY_ADDRESS: proxy_generator.generate(),
-            self.IMPLEMENTATION_ADDRESS: proxy_admin_generator.generate()
+            self.PROXY_ADMIN_ADDRESS: proxy_admin_generator.generate(owner_address=self.OWNER_ADDRESS),
+            self.PROXY_ADDRESS: proxy_generator.generate(
+                implementation_address=self.IMPLEMENTATION_ADDRESS,
+                admin_address=self.PROXY_ADMIN_ADDRESS,
+                initial_storage=proxy_admin_generator.generate_storage(owner_address=self.OWNER_ADDRESS)
+            ),
+            self.IMPLEMENTATION_ADDRESS: proxy_admin_generator.generate(owner_address=self.OWNER_ADDRESS)
         })
-
         return genesis
 
     # tests
