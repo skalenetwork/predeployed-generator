@@ -69,4 +69,4 @@ jobs:
     - name: Run tests
       run: |
         pytest --cov=src.predeployed_generator
-        bash <(curl -s https://codecov.io/bash) -f .coverage -t ${{ secrets.CODECOV_TOKEN }} || echo "Codecov did not collect coverage reports"    
+        bash <(curl -s https://codecov.io/bash) -t ${{ secrets.CODECOV_TOKEN }} || echo "Codecov did not collect coverage reports"    
