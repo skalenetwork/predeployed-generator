@@ -54,6 +54,8 @@ jobs:
         sudo apt install ethereum
 
     - name: Lint python
+      env:
+        PYTHONPATH: ./
       run: pylint src
     
     - name: Run tests
