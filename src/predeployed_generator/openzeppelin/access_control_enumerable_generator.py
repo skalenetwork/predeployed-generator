@@ -6,6 +6,8 @@ classes:
     AccessControlEnumerableGenerator
 '''
 
+from typing import List
+
 from ..contract_generator import ContractGenerator
 
 class AccessControlEnumerableGenerator(ContractGenerator):
@@ -20,7 +22,7 @@ class AccessControlEnumerableGenerator(ContractGenerator):
             roles_slot: int,
             role_members_slot: int,
             role: bytes,
-            accounts: [str]
+            accounts: List[str]
             ) -> None:
         role_data_slot = ContractGenerator.calculate_mapping_value_slot(
             roles_slot,

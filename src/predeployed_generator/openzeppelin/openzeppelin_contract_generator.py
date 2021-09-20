@@ -11,10 +11,10 @@ from ..contract_generator import ContractGenerator
 
 class OpenzeppelinContractGenerator(ContractGenerator):
     '''Creates contract generator based on hardhat artifact file from `artifacts` folder'''
-    ARTIFACT_FILENAME = None
+    ARTIFACT_FILENAME: str = ''
 
     def __init__(self):
-        if self.get_artifact_filename() is None:
+        if not self.get_artifact_filename():
             raise TypeError('ARTIFACT_FILENAME is not overloaded in the class')
         artifacts_dir = os.path.join(os.path.dirname(__file__), 'artifacts')
         artifacts_path = os.path.join(artifacts_dir, self.get_artifact_filename())

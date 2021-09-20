@@ -6,6 +6,8 @@ classes:
     TransparentUpgradeableProxyGenerator
 '''
 
+from typing import Dict
+
 from web3.auto import w3
 
 from .openzeppelin_contract_generator import OpenzeppelinContractGenerator
@@ -39,7 +41,7 @@ class TransparentUpgradeableProxyGenerator(OpenzeppelinContractGenerator):
         implementation_address = kwargs['implementation_address']
         admin_address = kwargs['admin_address']
         initial_storage = kwargs.get('initial_storage', None)
-        storage = {}
+        storage: Dict[str, str] = {}
         TransparentUpgradeableProxyGenerator._write_address(
             storage,
             TransparentUpgradeableProxyGenerator.IMPLEMENTATION_SLOT,

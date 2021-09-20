@@ -6,6 +6,8 @@ classes:
     ProxyAdminGenerator
 '''
 
+from typing import Dict
+
 from .openzeppelin_contract_generator import OpenzeppelinContractGenerator
 
 
@@ -24,9 +26,9 @@ class ProxyAdminGenerator(OpenzeppelinContractGenerator):
     # ---------ProxyAdmin----------
 
     @staticmethod
-    def generate_storage(**kwargs) -> dict:
+    def generate_storage(**kwargs) -> Dict[str, str]:
         owner_address = kwargs['owner_address']
-        storage = {}
+        storage: Dict[str, str] = {}
         ProxyAdminGenerator._write_address(
             storage,
             ProxyAdminGenerator.OWNER_SLOT,

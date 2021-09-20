@@ -16,6 +16,8 @@ Classes:
 from __future__ import annotations
 
 import json
+from typing import Union
+
 from web3.auto import w3
 
 
@@ -153,14 +155,22 @@ class ContractGenerator:
                     data)
 
     @staticmethod
-    def calculate_mapping_value_slot(slot: int, key: any, key_type: str) -> int:
+    def calculate_mapping_value_slot(slot: int, key: Union[bytes,str,int], key_type: str) -> int:
         '''Calculate slot in smart contract storage where value of the key in mapping is stored
         '''
-        if key_type == 'address':
+        if key_type == 'bytes32':
+            assert isinstance(key, bytes)
+        elif key_type == 'address':
+            assert isinstance(key, str)
             return ContractGenerator.calculate_mapping_value_slot(
                 slot,
                 int(key, 16).to_bytes(32, 'big'),
                 'bytes32')
+        elif key_type == 'uint256':
+            assert isinstance(key, int)
+        else:
+            raise TypeError(f'{key_type} is unknown key type')
+            
         return int.from_bytes(w3.solidityKeccak([key_type, 'uint256'], [key, slot]), 'big')
 
 
