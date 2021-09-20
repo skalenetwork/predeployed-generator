@@ -57,8 +57,8 @@ class ContractGenerator:
             contract = json.load(artifact_file)
             return ContractGenerator(contract['deployedBytecode'], balance, nonce)
 
-    def generate(self, **args) -> dict:
-        '''Generate smart contract allocation
+    def generate(self, **initial_values) -> dict:
+        '''Generate smart contract
 
         Returns an object in format:
         {
@@ -68,7 +68,22 @@ class ContractGenerator:
             'storage': ...
         }
         '''
-        return self._generate(self.generate_storage(**args))
+        return self._generate(self.generate_storage(**initial_values))
+
+    def generate_allocation(self, contract_address, **args) -> dict:
+        '''Generate smart contract allocation
+
+        Returns an object in format:
+        {
+            "0xd2...": {
+                'balance': ... ,
+                'nonce': ... ,
+                'code': ... ,
+                'storage': ...
+            }
+        }
+        '''
+        return {contract_address: self._generate(self.generate_storage(**args))}
 
     @staticmethod
     def generate_storage(**_) -> dict:
@@ -87,7 +102,7 @@ class ContractGenerator:
         assert isinstance(self.bytecode, str)
         assert isinstance(self.balance, int)
         assert isinstance(self.nonce, int)
-        assert isinstance(storage, dict)
+        assert isinstance(storage, dict) or storage is None
         return {
             'code': self.bytecode,
             'balance': hex(self.balance),
