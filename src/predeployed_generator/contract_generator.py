@@ -170,7 +170,7 @@ class ContractGenerator:
             assert isinstance(key, int)
         else:
             raise TypeError(f'{key_type} is unknown key type')
-            
+
         return int.from_bytes(w3.solidityKeccak([key_type, 'uint256'], [key, slot]), 'big')
 
 
