@@ -1,0 +1,18 @@
+{
+  "name": "test",
+  "version": "1.0.0",
+  "description": "The project to test predeployed generator",
+  "main": "index.js",
+  "repository": "https://github.com/skalenetwork/predeployed-generator",
+  "author": "Dmytro Stebaiev",
+  "license": "AGPL-3.0",
+  "private": false,
+  "devDependencies": {
+    "hardhat": "^2.6.4",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.4.3"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts-upgradeable": "^4.3.2"
+  }
+}
