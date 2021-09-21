@@ -72,7 +72,17 @@ class ContractGenerator:
         '''
         return self._generate(self.generate_storage(**initial_values))
 
-    def generate_allocation(self, contract_address: str, **args) -> Dict[str, Dict[str, Union[int, str, Dict[str, str]]]]:
+    def generate_allocation(self, contract_address: str, **args) -> Dict[
+                                                                        str,
+                                                                        Dict[
+                                                                            str,
+                                                                            Union[
+                                                                                int,
+                                                                                str,
+                                                                                Dict[str, str]
+                                                                            ]
+                                                                        ]
+                                                                    ]:
         '''Generate smart contract allocation
 
         Returns an object in format:
@@ -96,7 +106,14 @@ class ContractGenerator:
 
     # private
 
-    def _generate(self, storage: Dict[str, str] = None) -> Dict[str, Union[int, str, Dict[str, str]]]:
+    def _generate(self, storage: Dict[str, str] = None) -> Dict[
+                                                            str,
+                                                            Union[
+                                                                int,
+                                                                str,
+                                                                Dict[str, str]
+                                                            ]
+                                                        ]:
         '''Produce smart contract allocation object.
 
         It consists of fields 'code', 'balance', 'nonce' and 'storage'
@@ -155,9 +172,13 @@ class ContractGenerator:
                     data)
 
     @classmethod
-    def calculate_mapping_value_slot(cls, slot: int, key: Union[bytes,str,int], key_type: str) -> int:
-        '''Calculate slot in smart contract storage where value of the key in mapping is stored
-        '''
+    def calculate_mapping_value_slot(
+            cls,
+            slot: int,
+            key: Union[bytes, str, int],
+            key_type: str) -> int:
+        '''Calculate slot in smart contract storage where value of the key in mapping is stored'''
+
         if key_type == 'bytes32':
             assert isinstance(key, bytes)
         elif key_type == 'address':
