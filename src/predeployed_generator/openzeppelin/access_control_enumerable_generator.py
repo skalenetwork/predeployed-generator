@@ -12,11 +12,11 @@ from typing import List
 from ..contract_generator import ContractGenerator
 
 class AccessControlEnumerableGenerator(ContractGenerator):
-    '''Generates AccessControlEnumerable
-    '''
+    '''Generates AccessControlEnumerable'''
 
     @dataclass
     class RolesSlots:
+        '''Stores information about slots structure related to roles fields'''
         roles: int
         role_members: int
 
