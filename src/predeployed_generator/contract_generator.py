@@ -87,8 +87,8 @@ class ContractGenerator:
         '''
         return {contract_address: self._generate(self.generate_storage(**args))}
 
-    @staticmethod
-    def generate_storage(**_) -> dict:
+    @classmethod
+    def generate_storage(cls, **_) -> dict:
         '''Generate smart contract storage layout
         based on initial values provided in args
         '''

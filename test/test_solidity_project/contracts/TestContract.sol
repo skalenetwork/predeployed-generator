@@ -2,8 +2,8 @@
 
 pragma solidity ^0.8.7;
 
-import "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol"
+import "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol";
 
 contract TestContract is AccessControlEnumerableUpgradeable {
-    bytes32 public constant TESTING_ROLE = keccak256("TESTING_ROLE");
+    bytes32 public constant TESTER_ROLE = keccak256("TESTER_ROLE");
 }

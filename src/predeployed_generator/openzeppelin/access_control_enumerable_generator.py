@@ -16,39 +16,40 @@ class AccessControlEnumerableGenerator(ContractGenerator):
 
     # private
 
-    @staticmethod
+    @classmethod
     def _setup_role(
+            cls,
             storage: dict,
             roles_slot: int,
             role_members_slot: int,
             role: bytes,
             accounts: List[str]
             ) -> None:
-        role_data_slot = ContractGenerator.calculate_mapping_value_slot(
+        role_data_slot = cls.calculate_mapping_value_slot(
             roles_slot,
             role,
             'bytes32')
         members_slot = role_data_slot
-        role_members_value_slot = ContractGenerator.calculate_mapping_value_slot(
+        role_members_value_slot = cls.calculate_mapping_value_slot(
             role_members_slot,
             role,
             'bytes32')
         values_slot = role_members_value_slot
         indexes_slot = role_members_value_slot + 1
-        ContractGenerator._write_uint256(storage, values_slot, len(accounts))
+        cls._write_uint256(storage, values_slot, len(accounts))
         for i, account in enumerate(accounts):
-            members_value_slot = ContractGenerator.calculate_mapping_value_slot(
+            members_value_slot = cls.calculate_mapping_value_slot(
                 members_slot,
                 account,
                 'address')
-            ContractGenerator._write_uint256(storage, members_value_slot, 1)
-            ContractGenerator._write_address(
+            cls._write_uint256(storage, members_value_slot, 1)
+            cls._write_address(
                 storage,
-                ContractGenerator.calculate_array_value_slot(values_slot, i),
+                cls.calculate_array_value_slot(values_slot, i),
                 account)
-            ContractGenerator._write_uint256(
+            cls._write_uint256(
                 storage,
-                ContractGenerator.calculate_mapping_value_slot(
+                cls.calculate_mapping_value_slot(
                     indexes_slot,
                     int(account, 16),
                     'uint256'),
