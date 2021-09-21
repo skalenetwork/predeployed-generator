@@ -1,9 +1,10 @@
-from src.predeployed_generator.upgradeable_contract_generator import UpgradeableContractGenerator
+import pytest
 from web3.auto import w3
 
 from .tools.test_openzeppelin import TestOpenzeppelin
 from src.predeployed_generator.openzeppelin.proxy_admin_generator import ProxyAdminGenerator
 from src.predeployed_generator.openzeppelin.transparent_upgradeable_proxy_generator import TransparentUpgradeableProxyGenerator
+from src.predeployed_generator.upgradeable_contract_generator import UpgradeableContractGenerator
 
 class TestTransparentUpgradeableProxyGenerator(TestOpenzeppelin):
     OWNER_ADDRESS = '0xd200000000000000000000000000000000000000'
@@ -60,4 +61,9 @@ class TestTransparentUpgradeableProxyGenerator(TestOpenzeppelin):
             
             proxy_admin = w3.eth.contract(address=self.PROXY_ADDRESS, abi=self.get_proxy_admin_abi())
             assert proxy_admin.functions.owner().call() == self.OWNER_ADDRESS
+
+    def test_wrong_generation(self):
+        with pytest.raises(RuntimeError):
+            contract_generator = UpgradeableContractGenerator(ProxyAdminGenerator())
+            contract_generator.generate()
 
