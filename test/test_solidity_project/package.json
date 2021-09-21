@@ -7,6 +7,10 @@
   "author": "Dmytro Stebaiev",
   "license": "AGPL-3.0",
   "private": false,
+  "scripts": {
+    "compile": "npx hardhat clean && npx hardhat compile",
+    "prepare": "yarn compile"
+  },
   "devDependencies": {
     "hardhat": "^2.6.4",
     "ts-node": "^10.2.1",

@@ -1,4 +1,5 @@
-from os.path import join, dirname
+from os.path import join, isdir, normpath
+from subprocess import run
 from typing import Dict
 
 from web3.auto import w3
@@ -40,7 +41,9 @@ class ContractGenerator(AccessControlEnumerableGenerator):
     ROLE_MEMBERS_SLOT = 151
 
     def __init__(self):
-        artifacts_dir = join(dirname(__file__), 'test_solidity_project', 'artifacts')
+        artifacts_dir = TestSolidityProject.get_artifacts_dir()
+        if not isdir(artifacts_dir):
+            self._build_contracts()
         artifact_path = join(artifacts_dir, 'contracts', f'{self.CONTRACT_NAME}.sol', f'{self.CONTRACT_NAME}.json')
         contract = self.from_hardhat_artifact(artifact_path)
         super().__init__(bytecode=contract.bytecode)
@@ -55,6 +58,12 @@ class ContractGenerator(AccessControlEnumerableGenerator):
         cls._setup_role(storage, rolesSlots, cls.DEFAULT_ADMIN_ROLE, [default_admin_address])
         cls._setup_role(storage, rolesSlots, cls.TESTER_ROLE, tester_addresses)
         return storage
+
+    # private
+
+    def _build_contracts(self):
+        process = run(['yarn', 'install'], capture_output=True, cwd=normpath(join(TestSolidityProject.get_artifacts_dir(), '..')))
+        assert process.returncode == 0
 
 
 class TestAccessControlEnumerableGenerator(TestSolidityProject):
