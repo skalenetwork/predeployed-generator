@@ -10,4 +10,5 @@ contract TestContract is AccessControlEnumerableUpgradeable {
     string public shortString;
     string public longString;
     bytes32 public bytes32Value;
+    address[] public testers;
 }

@@ -16,7 +16,7 @@ Classes:
 from __future__ import annotations
 
 import json
-from typing import Union
+from typing import Dict, List, Union
 
 from web3.auto import w3
 
@@ -59,7 +59,7 @@ class ContractGenerator:
             contract = json.load(artifact_file)
             return ContractGenerator(contract['deployedBytecode'], balance, nonce)
 
-    def generate(self, **initial_values) -> dict:
+    def generate(self, **initial_values) -> Dict[str, Union[int, str, Dict[str, str]]]:
         '''Generate smart contract
 
         Returns an object in format:
@@ -72,7 +72,7 @@ class ContractGenerator:
         '''
         return self._generate(self.generate_storage(**initial_values))
 
-    def generate_allocation(self, contract_address, **args) -> dict:
+    def generate_allocation(self, contract_address: str, **args) -> Dict[str, Dict[str, Union[int, str, Dict[str, str]]]]:
         '''Generate smart contract allocation
 
         Returns an object in format:
@@ -88,7 +88,7 @@ class ContractGenerator:
         return {contract_address: self._generate(self.generate_storage(**args))}
 
     @classmethod
-    def generate_storage(cls, **_) -> dict:
+    def generate_storage(cls, **_) -> Dict[str, str]:
         '''Generate smart contract storage layout
         based on initial values provided in args
         '''
@@ -96,7 +96,7 @@ class ContractGenerator:
 
     # private
 
-    def _generate(self, storage=None) -> dict:
+    def _generate(self, storage: Dict[str, str] = None) -> Dict[str, Union[int, str, Dict[str, str]]]:
         '''Produce smart contract allocation object.
 
         It consists of fields 'code', 'balance', 'nonce' and 'storage'
@@ -113,34 +113,34 @@ class ContractGenerator:
         }
 
     @staticmethod
-    def _write_address(storage: dict, slot: int, address: str) -> None:
+    def _write_address(storage: Dict[str, str], slot: int, address: str) -> None:
         storage[to_even_length(hex(slot))] = address.lower()
 
     @staticmethod
-    def _write_bytes32(storage: dict, slot: int, data: bytes) -> None:
+    def _write_bytes32(storage: Dict[str, str], slot: int, data: bytes) -> None:
         assert len(data) <= 32
         storage[to_even_length(hex(slot))] = to_even_length(add_0x(data.hex()))
 
     @staticmethod
-    def _write_uint256(storage: dict, slot: int, value: int) -> None:
+    def _write_uint256(storage: Dict[str, str], slot: int, value: int) -> None:
         storage[to_even_length(hex(slot))] = to_even_length(add_0x(hex(value)))
 
-    @staticmethod
-    def _write_addresses_array(storage: dict, slot: int, values: list) -> None:
-        ContractGenerator._write_uint256(storage, slot, len(values))
+    @classmethod
+    def _write_addresses_array(cls, storage: Dict[str, str], slot: int, values: List[str]) -> None:
+        cls._write_uint256(storage, slot, len(values))
         for i, address in enumerate(values):
-            address_slot = ContractGenerator.calculate_array_value_slot(slot, i)
-            ContractGenerator._write_address(storage, address_slot, address)
+            address_slot = cls.calculate_array_value_slot(slot, i)
+            cls._write_address(storage, address_slot, address)
 
-    @staticmethod
-    def _write_string(storage: dict, slot: int, value: str) -> None:
+    @classmethod
+    def _write_string(cls, storage: Dict[str, str], slot: int, value: str) -> None:
         binary = value.encode()
         length = len(binary)
         if length < 32:
             binary += (2 * length).to_bytes(32 - length, 'big')
-            ContractGenerator._write_bytes32(storage, slot, binary)
+            cls._write_bytes32(storage, slot, binary)
         else:
-            ContractGenerator._write_uint256(storage, slot, 2 * length + 1)
+            cls._write_uint256(storage, slot, 2 * length + 1)
 
             def chunks(size, source):
                 for i in range(0, len(source), size):
@@ -149,20 +149,20 @@ class ContractGenerator:
             for index, data in enumerate(chunks(32, binary)):
                 if len(data) < 32:
                     data += int(0).to_bytes(32 - len(data), 'big')
-                ContractGenerator._write_bytes32(
+                cls._write_bytes32(
                     storage,
-                    ContractGenerator.calculate_array_value_slot(slot, index),
+                    cls.calculate_array_value_slot(slot, index),
                     data)
 
-    @staticmethod
-    def calculate_mapping_value_slot(slot: int, key: Union[bytes,str,int], key_type: str) -> int:
+    @classmethod
+    def calculate_mapping_value_slot(cls, slot: int, key: Union[bytes,str,int], key_type: str) -> int:
         '''Calculate slot in smart contract storage where value of the key in mapping is stored
         '''
         if key_type == 'bytes32':
             assert isinstance(key, bytes)
         elif key_type == 'address':
             assert isinstance(key, str)
-            return ContractGenerator.calculate_mapping_value_slot(
+            return cls.calculate_mapping_value_slot(
                 slot,
                 int(key, 16).to_bytes(32, 'big'),
                 'bytes32')
