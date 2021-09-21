@@ -1,7 +1,9 @@
+import pytest
 from web3.auto import w3
 
 from .tools.custom_contract_generator import CustomContractGenerator
 from .tools.test_solidity_project import TestSolidityProject
+from src.predeployed_generator.contract_generator import ContractGenerator
 
 
 class TestContractGenerator(TestSolidityProject):
@@ -57,3 +59,20 @@ class TestContractGenerator(TestSolidityProject):
             test_contract = w3.eth.contract(address=self.CONTRACT_ADDRESS, abi=self.get_test_contract_abi())
             assert test_contract.functions.testers(0).call() == self.TESTER_ADDRESS
             assert test_contract.functions.testers(1).call() == self.TESTER2_ADDRESS
+
+    def test_generator_without_storage(self):
+        class EmptyGenerator(ContractGenerator):
+            pass
+
+        bytecode = '0xbytecode'
+        generator = EmptyGenerator(bytecode)
+        assert generator.generate() == {
+            'code': bytecode,
+            'nonce': '0x0',
+            'balance': '0x0',
+            'storage': {}
+        }
+
+    def test_non_existent_map_key_type(self):
+        with pytest.raises(TypeError):
+            ContractGenerator.calculate_mapping_value_slot(0, 'key', 'nonexistent')

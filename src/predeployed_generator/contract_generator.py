@@ -59,7 +59,7 @@ class ContractGenerator:
             contract = json.load(artifact_file)
             return ContractGenerator(contract['deployedBytecode'], balance, nonce)
 
-    def generate(self, **initial_values) -> Dict[str, Union[int, str, Dict[str, str]]]:
+    def generate(self, **initial_values) -> Dict[str, Union[str, Dict[str, str]]]:
         '''Generate smart contract
 
         Returns an object in format:
@@ -77,7 +77,6 @@ class ContractGenerator:
                                                                         Dict[
                                                                             str,
                                                                             Union[
-                                                                                int,
                                                                                 str,
                                                                                 Dict[str, str]
                                                                             ]
@@ -109,7 +108,6 @@ class ContractGenerator:
     def _generate(self, storage: Dict[str, str] = None) -> Dict[
                                                             str,
                                                             Union[
-                                                                int,
                                                                 str,
                                                                 Dict[str, str]
                                                             ]
