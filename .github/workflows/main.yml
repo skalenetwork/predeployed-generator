@@ -7,11 +7,10 @@ on: [push, pull_request]
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   test:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ["3.7.x", "3.8.x", "3.9.x"]
 
     steps:
