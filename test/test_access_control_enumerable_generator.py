@@ -35,10 +35,16 @@ class ContractGenerator(AccessControlEnumerableGenerator):
     # ...   __gap
     # 200:  __gap
     # ----------TestContract----------
+    # 201:  shortString
+    # 202:  longString
+    # 203:  bytes32Value
 
     INITIALIZED_SLOT = 0
     ROLES_SLOT = 101
     ROLE_MEMBERS_SLOT = 151
+    SHORT_STRING_SLOT = 201
+    LONG_STRING_SLOT = AccessControlEnumerableGenerator.next_slot(SHORT_STRING_SLOT)
+    BYTES32_VALUE_SLOT = AccessControlEnumerableGenerator.next_slot(LONG_STRING_SLOT)
 
     def __init__(self):
         artifacts_dir = TestSolidityProject.get_artifacts_dir()
@@ -57,6 +63,9 @@ class ContractGenerator(AccessControlEnumerableGenerator):
         rolesSlots = cls.RolesSlots(roles=cls.ROLES_SLOT, role_members=cls.ROLE_MEMBERS_SLOT)
         cls._setup_role(storage, rolesSlots, cls.DEFAULT_ADMIN_ROLE, [default_admin_address])
         cls._setup_role(storage, rolesSlots, cls.TESTER_ROLE, tester_addresses)
+        cls._write_string(storage, cls.SHORT_STRING_SLOT, "short string")
+        cls._write_string(storage, cls.LONG_STRING_SLOT, ' '.join(['very'] * 32) + ' long string')
+        cls._write_bytes32(storage, cls.BYTES32_VALUE_SLOT, cls.TESTER_ROLE)
         return storage
 
     # private
@@ -106,3 +115,30 @@ class TestAccessControlEnumerableGenerator(TestSolidityProject):
             assert test_contract.functions.getRoleMember(ContractGenerator.TESTER_ROLE, 1).call() == self.TESTER2_ADDRESS
             assert test_contract.functions.hasRole(ContractGenerator.TESTER_ROLE, self.TESTER_ADDRESS).call()
             assert test_contract.functions.hasRole(ContractGenerator.TESTER_ROLE, self.TESTER2_ADDRESS).call()
+
+    def test_short_string(self, tmpdir):
+        genesis = self.prepare_genesis()
+
+        with self.run_geth(tmpdir, genesis):
+            assert w3.isConnected()
+
+            test_contract = w3.eth.contract(address=self.CONTRACT_ADDRESS, abi=self.get_test_contract_abi())
+            assert test_contract.functions.shortString().call() == 'short string'
+
+    def test_long_string(self, tmpdir):
+        genesis = self.prepare_genesis()
+
+        with self.run_geth(tmpdir, genesis):
+            assert w3.isConnected()
+
+            test_contract = w3.eth.contract(address=self.CONTRACT_ADDRESS, abi=self.get_test_contract_abi())
+            assert test_contract.functions.longString().call() == ' '.join(['very'] * 32) + ' long string'
+
+    def test_bytes32(self, tmpdir):
+        genesis = self.prepare_genesis()
+
+        with self.run_geth(tmpdir, genesis):
+            assert w3.isConnected()
+
+            test_contract = w3.eth.contract(address=self.CONTRACT_ADDRESS, abi=self.get_test_contract_abi())
+            assert test_contract.functions.bytes32Value().call() == ContractGenerator.TESTER_ROLE

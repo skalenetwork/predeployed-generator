@@ -6,4 +6,8 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgrad
 
 contract TestContract is AccessControlEnumerableUpgradeable {
     bytes32 public constant TESTER_ROLE = keccak256("TESTER_ROLE");
+
+    string public shortString;
+    string public longString;
+    bytes32 public bytes32Value;
 }
