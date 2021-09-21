@@ -6,6 +6,7 @@ classes:
     AccessControlEnumerableGenerator
 '''
 
+from dataclasses import dataclass
 from typing import List
 
 from ..contract_generator import ContractGenerator
@@ -14,24 +15,28 @@ class AccessControlEnumerableGenerator(ContractGenerator):
     '''Generates AccessControlEnumerable
     '''
 
+    @dataclass
+    class RolesSlots:
+        roles: int
+        role_members: int
+
     # private
 
     @classmethod
     def _setup_role(
             cls,
             storage: dict,
-            roles_slot: int,
-            role_members_slot: int,
+            slots: RolesSlots,
             role: bytes,
             accounts: List[str]
             ) -> None:
         role_data_slot = cls.calculate_mapping_value_slot(
-            roles_slot,
+            slots.roles,
             role,
             'bytes32')
         members_slot = role_data_slot
         role_members_value_slot = cls.calculate_mapping_value_slot(
-            role_members_slot,
+            slots.role_members,
             role,
             'bytes32')
         values_slot = role_members_value_slot

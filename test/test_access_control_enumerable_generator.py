@@ -51,8 +51,9 @@ class ContractGenerator(AccessControlEnumerableGenerator):
         tester_addresses = kwargs['testers']
         storage: Dict[str, str] = {}
         cls._write_uint256(storage, ContractGenerator.INITIALIZED_SLOT, 1)
-        cls._setup_role(storage, cls.ROLES_SLOT, cls.ROLE_MEMBERS_SLOT, cls.DEFAULT_ADMIN_ROLE, [default_admin_address])
-        cls._setup_role(storage, cls.ROLES_SLOT, cls.ROLE_MEMBERS_SLOT, cls.TESTER_ROLE, tester_addresses)
+        rolesSlots = cls.RolesSlots(roles=cls.ROLES_SLOT, role_members=cls.ROLE_MEMBERS_SLOT)
+        cls._setup_role(storage, rolesSlots, cls.DEFAULT_ADMIN_ROLE, [default_admin_address])
+        cls._setup_role(storage, rolesSlots, cls.TESTER_ROLE, tester_addresses)
         return storage
 
 
