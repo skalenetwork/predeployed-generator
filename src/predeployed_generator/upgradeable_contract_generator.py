@@ -61,7 +61,7 @@ Use `generate_allocation` method instead''')
         proxy_admin_address = kwargs.pop('proxy_admin_address')
         implementation_address = kwargs.pop(
             'implementation_address',
-            w3.solidityKeccak(['address'], [contract_address])[2 + 2 * 20:])
+            w3.toChecksumAddress(w3.solidityKeccak(['address'], [contract_address])[:20]))
 
         return {
             contract_address: super().generate(

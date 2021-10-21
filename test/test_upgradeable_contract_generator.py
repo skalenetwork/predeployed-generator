@@ -10,6 +10,7 @@ class TestTransparentUpgradeableProxyGenerator(TestOpenzeppelin):
     OWNER_ADDRESS = '0xd200000000000000000000000000000000000000'
     PROXY_ADMIN_ADDRESS = '0xd200000000000000000000000000000000000001'
     PROXY_ADDRESS = '0xD200000000000000000000000000000000000002'
+    PROXY_ADDRESS_HASH = '0xf4CD0343eb019A7869A0D28c8C3A546a313fEB51'
     IMPLEMENTATION_ADDRESS = '0xd200000000000000000000000000000000000003'
 
 
@@ -52,6 +53,25 @@ class TestTransparentUpgradeableProxyGenerator(TestOpenzeppelin):
             
             proxy_admin = w3.eth.contract(address=self.PROXY_ADMIN_ADDRESS, abi=self.get_proxy_admin_abi())
             assert proxy_admin.functions.getProxyImplementation(self.PROXY_ADDRESS).call() == self.IMPLEMENTATION_ADDRESS
+
+    def test_default_implementation_address(self, tmpdir):
+        proxy_admin_generator = ProxyAdminGenerator()
+        upgradeable_contract_generator = UpgradeableContractGenerator(proxy_admin_generator)
+
+        genesis = self.generate_genesis({
+            self.PROXY_ADMIN_ADDRESS: proxy_admin_generator.generate(owner_address=self.OWNER_ADDRESS),
+            **upgradeable_contract_generator.generate_allocation(
+                contract_address=self.PROXY_ADDRESS,
+                proxy_admin_address=self.PROXY_ADMIN_ADDRESS,
+                owner_address=self.OWNER_ADDRESS
+            )
+        })
+
+        with self.run_geth(tmpdir, genesis):
+            assert w3.isConnected()
+            
+            proxy_admin = w3.eth.contract(address=self.PROXY_ADMIN_ADDRESS, abi=self.get_proxy_admin_abi())
+            assert proxy_admin.functions.getProxyImplementation(self.PROXY_ADDRESS).call() == self.PROXY_ADDRESS_HASH
     
     def test_owner(self, tmpdir):
         genesis = self.prepare_genesis()
