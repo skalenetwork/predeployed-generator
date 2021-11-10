@@ -41,6 +41,8 @@ Use `generate_allocation` method instead''')
 
         Optional arguments:
             - implementation_address
+            - balance
+            - nonce
 
         Returns an object in format:
         {
@@ -62,11 +64,15 @@ Use `generate_allocation` method instead''')
         implementation_address = kwargs.pop(
             'implementation_address',
             w3.toChecksumAddress(w3.solidityKeccak(['address'], [contract_address])[:20]))
+        balance = kwargs.pop("balance", 0)
+        nonce = kwargs.pop("nonce", 0)
 
         return {
             contract_address: super().generate(
                 admin_address=proxy_admin_address,
                 implementation_address=implementation_address,
-                initial_storage=self.implementation_generator.generate_storage(**kwargs)),
+                initial_storage=self.implementation_generator.generate_storage(**kwargs),
+                balance=balance,
+                nonce=nonce),
             # pylint: disable=W0212
             implementation_address: self.implementation_generator._generate(storage=None)}

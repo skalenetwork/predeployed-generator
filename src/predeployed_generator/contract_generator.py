@@ -44,20 +44,15 @@ def add_0x(bytes_string: str) -> str:
 
 class ContractGenerator:
     '''Generate smart contract allocation in a genesis block'''
-    def __init__(self, bytecode: str, balance: int = 0, nonce: int = 0):
+    def __init__(self, bytecode: str):
         self.bytecode = bytecode
-        self.balance = balance
-        self.nonce = nonce
 
     @staticmethod
-    def from_hardhat_artifact(
-            artifact_filename: str,
-            balance: int = 0,
-            nonce: int = 0) -> ContractGenerator:
+    def from_hardhat_artifact(artifact_filename: str) -> ContractGenerator:
         '''Create ContractGenerator from the artifact file built by hardhat'''
         with open(artifact_filename, encoding='utf-8') as artifact_file:
             contract = json.load(artifact_file)
-            return ContractGenerator(contract['deployedBytecode'], balance, nonce)
+            return ContractGenerator(contract['deployedBytecode'])
 
     def generate(self, **initial_values) -> Dict[str, Union[str, Dict[str, str]]]:
         '''Generate smart contract
@@ -70,7 +65,9 @@ class ContractGenerator:
             'storage': ...
         }
         '''
-        return self._generate(self.generate_storage(**initial_values))
+        balance = initial_values.pop("balance", 0)
+        nonce = initial_values.pop("nonce", 0)
+        return self._generate(self.generate_storage(**initial_values), balance, nonce)
 
     def generate_allocation(self, contract_address: str, **args) -> Dict[
                                                                         str,
@@ -94,7 +91,9 @@ class ContractGenerator:
             }
         }
         '''
-        return {contract_address: self._generate(self.generate_storage(**args))}
+        balance = args.pop("balance", 0)
+        nonce = args.pop("nonce", 0)
+        return {contract_address: self._generate(self.generate_storage(**args), balance, nonce)}
 
     @classmethod
     def generate_storage(cls, **_) -> Dict[str, str]:
@@ -105,7 +104,7 @@ class ContractGenerator:
 
     # private
 
-    def _generate(self, storage: Dict[str, str] = None) -> Dict[
+    def _generate(self, storage: Dict[str, str] = None, balance: int = 0, nonce: int = 0) -> Dict[
                                                             str,
                                                             Union[
                                                                 str,
@@ -117,13 +116,13 @@ class ContractGenerator:
         It consists of fields 'code', 'balance', 'nonce' and 'storage'
         '''
         assert isinstance(self.bytecode, str)
-        assert isinstance(self.balance, int)
-        assert isinstance(self.nonce, int)
+        assert isinstance(balance, int)
+        assert isinstance(nonce, int)
         assert isinstance(storage, dict) or storage is None
         return {
             'code': self.bytecode,
-            'balance': hex(self.balance),
-            'nonce': hex(self.nonce),
+            'balance': hex(balance),
+            'nonce': hex(nonce),
             'storage': storage if storage is not None else {}
         }
 
