@@ -43,6 +43,10 @@ def add_0x(bytes_string: str) -> str:
 
 
 class ContractGenerator:
+    Storage = Dict[str, str]
+    Account = Dict[str, Union[str, Storage]]
+    Allocation = Dict[str, Account]
+
     '''Generate smart contract allocation in a genesis block'''
     def __init__(self, bytecode: str):
         self.bytecode = bytecode
@@ -54,7 +58,7 @@ class ContractGenerator:
             contract = json.load(artifact_file)
             return ContractGenerator(contract['deployedBytecode'])
 
-    def generate(self, **initial_values) -> Dict[str, Union[str, Dict[str, str]]]:
+    def generate(self, balance=0, nonce=0, **initial_values) -> Account:
         '''Generate smart contract
 
         Returns an object in format:
@@ -65,20 +69,9 @@ class ContractGenerator:
             'storage': ...
         }
         '''
-        balance = initial_values.pop("balance", 0)
-        nonce = initial_values.pop("nonce", 0)
         return self._generate(self.generate_storage(**initial_values), balance, nonce)
 
-    def generate_allocation(self, contract_address: str, **args) -> Dict[
-                                                                        str,
-                                                                        Dict[
-                                                                            str,
-                                                                            Union[
-                                                                                str,
-                                                                                Dict[str, str]
-                                                                            ]
-                                                                        ]
-                                                                    ]:
+    def generate_allocation(self, contract_address: str, balance=0, nonce=0, **args) -> Allocation:
         '''Generate smart contract allocation
 
         Returns an object in format:
@@ -91,12 +84,10 @@ class ContractGenerator:
             }
         }
         '''
-        balance = args.pop("balance", 0)
-        nonce = args.pop("nonce", 0)
         return {contract_address: self._generate(self.generate_storage(**args), balance, nonce)}
 
     @classmethod
-    def generate_storage(cls, **_) -> Dict[str, str]:
+    def generate_storage(cls, **_) -> Storage:
         '''Generate smart contract storage layout
         based on initial values provided in args
         '''
@@ -104,13 +95,7 @@ class ContractGenerator:
 
     # private
 
-    def _generate(self, storage: Dict[str, str] = None, balance: int = 0, nonce: int = 0) -> Dict[
-                                                            str,
-                                                            Union[
-                                                                str,
-                                                                Dict[str, str]
-                                                            ]
-                                                        ]:
+    def _generate(self, storage: Storage = None, balance: int = 0, nonce: int = 0) -> Account:
         '''Produce smart contract allocation object.
 
         It consists of fields 'code', 'balance', 'nonce' and 'storage'
@@ -127,27 +112,27 @@ class ContractGenerator:
         }
 
     @staticmethod
-    def _write_address(storage: Dict[str, str], slot: int, address: str) -> None:
+    def _write_address(storage: Storage, slot: int, address: str) -> None:
         storage[to_even_length(hex(slot))] = address.lower()
 
     @staticmethod
-    def _write_bytes32(storage: Dict[str, str], slot: int, data: bytes) -> None:
+    def _write_bytes32(storage: Storage, slot: int, data: bytes) -> None:
         assert len(data) <= 32
         storage[to_even_length(hex(slot))] = to_even_length(add_0x(data.hex()))
 
     @staticmethod
-    def _write_uint256(storage: Dict[str, str], slot: int, value: int) -> None:
+    def _write_uint256(storage: Storage, slot: int, value: int) -> None:
         storage[to_even_length(hex(slot))] = to_even_length(add_0x(hex(value)))
 
     @classmethod
-    def _write_addresses_array(cls, storage: Dict[str, str], slot: int, values: List[str]) -> None:
+    def _write_addresses_array(cls, storage: Storage, slot: int, values: List[str]) -> None:
         cls._write_uint256(storage, slot, len(values))
         for i, address in enumerate(values):
             address_slot = cls.calculate_array_value_slot(slot, i)
             cls._write_address(storage, address_slot, address)
 
     @classmethod
-    def _write_string(cls, storage: Dict[str, str], slot: int, value: str) -> None:
+    def _write_string(cls, storage: Storage, slot: int, value: str) -> None:
         binary = value.encode()
         length = len(binary)
         if length < 32:
@@ -172,7 +157,7 @@ class ContractGenerator:
     def calculate_mapping_value_slot(
             cls,
             slot: int,
-            key: Union[bytes, str, int],
+            key: Union[bytes, int, str],
             key_type: str) -> int:
         '''Calculate slot in smart contract storage where value of the key in mapping is stored'''
 
