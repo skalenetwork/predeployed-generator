@@ -43,11 +43,12 @@ def add_0x(bytes_string: str) -> str:
 
 
 class ContractGenerator:
+    '''Generate smart contract allocation in a genesis block'''
+
     Storage = Dict[str, str]
     Account = Dict[str, Union[str, Storage]]
     Allocation = Dict[str, Account]
 
-    '''Generate smart contract allocation in a genesis block'''
     def __init__(self, bytecode: str):
         self.bytecode = bytecode
 
@@ -71,7 +72,9 @@ class ContractGenerator:
         '''
         return self._generate(self.generate_storage(**initial_values), balance, nonce)
 
-    def generate_allocation(self, contract_address: str, balance=0, nonce=0, **args) -> Allocation:
+    def generate_allocation(
+        self, contract_address: str, balance=0, nonce=0, **args
+    ) -> ContractGenerator.Allocation:
         '''Generate smart contract allocation
 
         Returns an object in format:

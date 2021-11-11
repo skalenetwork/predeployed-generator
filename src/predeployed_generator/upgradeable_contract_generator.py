@@ -26,7 +26,9 @@ class UpgradeableContractGenerator(TransparentUpgradeableProxyGenerator):
         raise RuntimeError('''Can\'t generate upgradeable contract without implementation.
 Use `generate_allocation` method instead''')
 
-    def generate_allocation(self, contract_address, balance=0, nonce=0, **kwargs) -> ContractGenerator.Allocation:
+    def generate_allocation(
+        self, contract_address, balance=0, nonce=0, **kwargs
+    ) -> ContractGenerator.Allocation:
         '''Generate smart contract allocation.
         It's pair of 2 smart contract:
         the first is upgradeable proxy
