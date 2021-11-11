@@ -65,11 +65,13 @@ class TestContractGenerator(TestSolidityProject):
             pass
 
         bytecode = '0xbytecode'
+        balance = 5
+        nonce = 13
         generator = EmptyGenerator(bytecode)
-        assert generator.generate() == {
+        assert generator.generate(balance=balance, nonce=nonce) == {
             'code': bytecode,
-            'nonce': '0x0',
-            'balance': '0x0',
+            'nonce': hex(nonce),
+            'balance': hex(balance),
             'storage': {}
         }
 
