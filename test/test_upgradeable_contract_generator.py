@@ -87,3 +87,28 @@ class TestTransparentUpgradeableProxyGenerator(TestOpenzeppelin):
             contract_generator = UpgradeableContractGenerator(ProxyAdminGenerator())
             contract_generator.generate()
 
+    def test_balance_and_nonce(self, tmpdir):
+        proxy_admin_generator = ProxyAdminGenerator()
+        upgradeable_contract_generator = UpgradeableContractGenerator(proxy_admin_generator)
+
+        balance = 5
+        nonce = 1
+
+        genesis = self.generate_genesis({
+            self.PROXY_ADMIN_ADDRESS: proxy_admin_generator.generate(owner_address=self.OWNER_ADDRESS),
+            **upgradeable_contract_generator.generate_allocation(
+                balance=balance,
+                nonce=nonce,
+                contract_address=self.PROXY_ADDRESS,
+                implementation_address=self.IMPLEMENTATION_ADDRESS,
+                proxy_admin_address=self.PROXY_ADMIN_ADDRESS,
+                owner_address=self.OWNER_ADDRESS
+            )
+        })
+
+        with self.run_geth(tmpdir, genesis):
+            assert w3.isConnected()
+            
+            assert w3.eth.get_balance(self.PROXY_ADDRESS) == balance
+            assert w3.eth.get_transaction_count(self.PROXY_ADDRESS) == nonce
+

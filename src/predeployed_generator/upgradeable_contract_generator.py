@@ -22,11 +22,13 @@ class UpgradeableContractGenerator(TransparentUpgradeableProxyGenerator):
         super().__init__()
         self.implementation_generator = implementation_generator
 
-    def generate(self, **_) -> dict:
+    def generate(self, balance=0, nonce=0, **_) -> ContractGenerator.Account:
         raise RuntimeError('''Can\'t generate upgradeable contract without implementation.
 Use `generate_allocation` method instead''')
 
-    def generate_allocation(self, contract_address, **kwargs) -> dict:
+    def generate_allocation(
+        self, contract_address, balance=0, nonce=0, **kwargs
+    ) -> ContractGenerator.Allocation:
         '''Generate smart contract allocation.
         It's pair of 2 smart contract:
         the first is upgradeable proxy
@@ -41,6 +43,8 @@ Use `generate_allocation` method instead''')
 
         Optional arguments:
             - implementation_address
+            - balance
+            - nonce
 
         Returns an object in format:
         {
@@ -67,6 +71,8 @@ Use `generate_allocation` method instead''')
             contract_address: super().generate(
                 admin_address=proxy_admin_address,
                 implementation_address=implementation_address,
-                initial_storage=self.implementation_generator.generate_storage(**kwargs)),
+                initial_storage=self.implementation_generator.generate_storage(**kwargs),
+                balance=balance,
+                nonce=nonce),
             # pylint: disable=W0212
             implementation_address: self.implementation_generator._generate(storage=None)}
