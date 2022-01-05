@@ -49,15 +49,16 @@ class ContractGenerator:
     Account = Dict[str, Union[str, Storage]]
     Allocation = Dict[str, Account]
 
-    def __init__(self, bytecode: str):
+    def __init__(self, bytecode: str, abi: list):
         self.bytecode = bytecode
+        self.abi = abi
 
     @staticmethod
     def from_hardhat_artifact(artifact_filename: str) -> ContractGenerator:
         '''Create ContractGenerator from the artifact file built by hardhat'''
         with open(artifact_filename, encoding='utf-8') as artifact_file:
             contract = json.load(artifact_file)
-            return ContractGenerator(contract['deployedBytecode'])
+            return ContractGenerator(contract['deployedBytecode'], contract['abi'])
 
     def generate(self, balance=0, nonce=0, **initial_values) -> Account:
         '''Generate smart contract
@@ -95,6 +96,11 @@ class ContractGenerator:
         based on initial values provided in args
         '''
         return {}
+
+    def get_abi(self) -> list:
+        '''Get the smart contract ABI
+        '''
+        return self.abi
 
     # private
 
