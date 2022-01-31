@@ -52,7 +52,7 @@ class CustomContractGenerator(AccessControlEnumerableGenerator):
             self._build_contracts()
         artifact_path = join(artifacts_dir, 'contracts', f'{self.CONTRACT_NAME}.sol', f'{self.CONTRACT_NAME}.json')
         contract = self.from_hardhat_artifact(artifact_path)
-        super().__init__(bytecode=contract.bytecode)
+        super().__init__(bytecode=contract.bytecode, abi=contract.bytecode)
 
     @classmethod
     def generate_storage(cls, **kwargs) -> Dict[str, str]:

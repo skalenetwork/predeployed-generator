@@ -19,7 +19,7 @@ class OpenzeppelinContractGenerator(ContractGenerator):
         artifacts_dir = os.path.join(os.path.dirname(__file__), 'artifacts')
         artifacts_path = os.path.join(artifacts_dir, self.get_artifact_filename())
         contract = ContractGenerator.from_hardhat_artifact(artifacts_path)
-        super().__init__(bytecode=contract.bytecode)
+        super().__init__(bytecode=contract.bytecode, abi=contract.abi)
 
     def get_artifact_filename(self):
         '''Return filename of contract artifact'''
