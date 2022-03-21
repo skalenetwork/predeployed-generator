@@ -11,6 +11,7 @@ class TestProxyAdminGenerator(TestOpenzeppelin):
 
 
     def test_owner(self, tmpdir):
+        self.datadir = tmpdir
         owner_address = '0xd200000000000000000000000000000000000000'
         proxy_admin_address = '0xd200000000000000000000000000000000000001'
         generator = ProxyAdminGenerator()

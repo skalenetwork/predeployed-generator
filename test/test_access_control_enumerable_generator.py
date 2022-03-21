@@ -22,6 +22,7 @@ class TestAccessControlEnumerableGenerator(TestSolidityProject):
             testers=[self.TESTER_ADDRESS, self.TESTER2_ADDRESS]))
     
     def test_default_admin_role(self, tmpdir):
+        self.datadir = tmpdir
         genesis = self.prepare_genesis()
 
         with self.run_geth(tmpdir, genesis):
@@ -33,6 +34,7 @@ class TestAccessControlEnumerableGenerator(TestSolidityProject):
             assert test_contract.functions.hasRole(CustomContractGenerator.DEFAULT_ADMIN_ROLE, self.OWNER_ADDRESS).call()
 
     def test_tester_role(self, tmpdir):
+        self.datadir = tmpdir
         genesis = self.prepare_genesis()
 
         with self.run_geth(tmpdir, genesis):

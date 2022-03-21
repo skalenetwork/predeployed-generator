@@ -24,6 +24,7 @@ class TestContractGenerator(TestSolidityProject):
             testers=[self.TESTER_ADDRESS, self.TESTER2_ADDRESS]))
 
     def test_short_string(self, tmpdir):
+        self.datadir = tmpdir
         genesis = self.prepare_genesis()
 
         with self.run_geth(tmpdir, genesis):
@@ -33,6 +34,7 @@ class TestContractGenerator(TestSolidityProject):
             assert test_contract.functions.shortString().call() == 'short string'
 
     def test_long_string(self, tmpdir):
+        self.datadir = tmpdir
         genesis = self.prepare_genesis()
 
         with self.run_geth(tmpdir, genesis):
@@ -42,6 +44,7 @@ class TestContractGenerator(TestSolidityProject):
             assert test_contract.functions.longString().call() == ' '.join(['very'] * 32) + ' long string'
 
     def test_bytes32(self, tmpdir):
+        self.datadir = tmpdir
         genesis = self.prepare_genesis()
 
         with self.run_geth(tmpdir, genesis):
@@ -51,6 +54,7 @@ class TestContractGenerator(TestSolidityProject):
             assert test_contract.functions.bytes32Value().call() == CustomContractGenerator.TESTER_ROLE
 
     def test_addresses_array(self, tmpdir):
+        self.datadir = tmpdir
         genesis = self.prepare_genesis()
 
         with self.run_geth(tmpdir, genesis):
