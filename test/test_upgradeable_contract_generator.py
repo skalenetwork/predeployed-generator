@@ -36,7 +36,8 @@ class TestTransparentUpgradeableProxyGenerator(TestOpenzeppelin):
 
     # tests
 
-    def test_admin(self, tmpdir):        
+    def test_admin(self, tmpdir):     
+        self.datadir = tmpdir   
         genesis = self.prepare_genesis()
 
         with self.run_geth(tmpdir, genesis):
@@ -46,6 +47,7 @@ class TestTransparentUpgradeableProxyGenerator(TestOpenzeppelin):
             assert proxy_admin.functions.getProxyAdmin(self.PROXY_ADDRESS).call() == self.PROXY_ADMIN_ADDRESS
 
     def test_implementation(self, tmpdir):
+        self.datadir = tmpdir
         genesis = self.prepare_genesis()
 
         with self.run_geth(tmpdir, genesis):
@@ -55,6 +57,7 @@ class TestTransparentUpgradeableProxyGenerator(TestOpenzeppelin):
             assert proxy_admin.functions.getProxyImplementation(self.PROXY_ADDRESS).call() == self.IMPLEMENTATION_ADDRESS
 
     def test_default_implementation_address(self, tmpdir):
+        self.datadir = tmpdir
         proxy_admin_generator = ProxyAdminGenerator()
         upgradeable_contract_generator = UpgradeableContractGenerator(proxy_admin_generator)
 
@@ -74,6 +77,7 @@ class TestTransparentUpgradeableProxyGenerator(TestOpenzeppelin):
             assert proxy_admin.functions.getProxyImplementation(self.PROXY_ADDRESS).call() == self.PROXY_ADDRESS_HASH
     
     def test_owner(self, tmpdir):
+        self.datadir = tmpdir
         genesis = self.prepare_genesis()
 
         with self.run_geth(tmpdir, genesis):
@@ -88,6 +92,7 @@ class TestTransparentUpgradeableProxyGenerator(TestOpenzeppelin):
             contract_generator.generate()
 
     def test_balance_and_nonce(self, tmpdir):
+        self.datadir = tmpdir
         proxy_admin_generator = ProxyAdminGenerator()
         upgradeable_contract_generator = UpgradeableContractGenerator(proxy_admin_generator)
 

@@ -35,7 +35,8 @@ class TestTransparentUpgradeableProxyGenerator(TestOpenzeppelin):
 
     # tests
 
-    def test_admin(self, tmpdir):        
+    def test_admin(self, tmpdir):   
+        self.datadir = tmpdir     
         genesis = self.prepare_genesis()
 
         with self.run_geth(tmpdir, genesis):
@@ -45,6 +46,7 @@ class TestTransparentUpgradeableProxyGenerator(TestOpenzeppelin):
             assert proxy_admin.functions.getProxyAdmin(self.PROXY_ADDRESS).call() == self.PROXY_ADMIN_ADDRESS
 
     def test_implementation(self, tmpdir):
+        self.datadir = tmpdir
         genesis = self.prepare_genesis()
 
         with self.run_geth(tmpdir, genesis):
