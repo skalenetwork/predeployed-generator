@@ -1,3 +1,4 @@
+import json
 from os.path import join, isdir, normpath
 from subprocess import run
 from typing import Dict
@@ -51,8 +52,9 @@ class CustomContractGenerator(AccessControlEnumerableGenerator):
         if not isdir(artifacts_dir):
             self._build_contracts()
         artifact_path = join(artifacts_dir, 'contracts', f'{self.CONTRACT_NAME}.sol', f'{self.CONTRACT_NAME}.json')
-        contract = self.from_hardhat_artifact(artifact_path)
-        super().__init__(bytecode=contract.bytecode, abi=contract.bytecode)
+        meta_path = self._get_meta_path()
+        contract = self.from_hardhat_artifact(artifact_path, meta_path)
+        super().__init__(bytecode=contract.bytecode, abi=contract.abi, meta=contract.meta)
 
     @classmethod
     def generate_storage(cls, **kwargs) -> Dict[str, str]:
@@ -74,3 +76,12 @@ class CustomContractGenerator(AccessControlEnumerableGenerator):
     def _build_contracts(self):
         process = run(['yarn', 'install'], capture_output=True, cwd=normpath(join(TestSolidityProject.get_artifacts_dir(), '..')))
         assert process.returncode == 0
+
+    def _get_meta_path(self):
+        artifacts_dir = TestSolidityProject.get_artifacts_dir()
+        dbg_path = join(artifacts_dir, 'contracts', f'{self.CONTRACT_NAME}.sol', f'{self.CONTRACT_NAME}.dbg.json')
+        with open(dbg_path) as dbg_file:
+            dbg_info = json.loads(dbg_file.read())
+            build_info_path = dbg_info['buildInfo']
+        return join(artifacts_dir, 'contracts', f'{self.CONTRACT_NAME}.sol', build_info_path)
+
