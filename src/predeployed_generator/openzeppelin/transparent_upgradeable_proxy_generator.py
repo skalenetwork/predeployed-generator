@@ -17,6 +17,7 @@ class TransparentUpgradeableProxyGenerator(OpenzeppelinContractGenerator):
     '''Generates transparent upgradeable proxy
     '''
     ARTIFACT_FILENAME = 'TransparentUpgradeableProxy.json'
+    META_FILENAME = 'TransparentUpgradeableProxy.meta.json'
     ROLLBACK_SLOT = int.from_bytes(
         w3.solidityKeccak(['string'], ['eip1967.proxy.rollback']),
         byteorder='big') - 1
