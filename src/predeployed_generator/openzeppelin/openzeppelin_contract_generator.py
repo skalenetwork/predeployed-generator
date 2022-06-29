@@ -17,6 +17,8 @@ class OpenzeppelinContractGenerator(ContractGenerator):
     def __init__(self):
         if not self.get_artifact_filename():
             raise TypeError('ARTIFACT_FILENAME is not overloaded in the class')
+        if not self.get_meta_filename():
+            raise TypeError('META_FILENAME is not overloaded in the class')
         artifacts_dir = os.path.join(os.path.dirname(__file__), 'artifacts')
         artifacts_path = os.path.join(artifacts_dir, self.get_artifact_filename())
         meta_path = os.path.join(artifacts_dir, self.get_meta_filename())

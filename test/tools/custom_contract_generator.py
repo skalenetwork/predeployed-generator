@@ -84,4 +84,3 @@ class CustomContractGenerator(AccessControlEnumerableGenerator):
             dbg_info = json.loads(dbg_file.read())
             build_info_path = dbg_info['buildInfo']
         return join(artifacts_dir, 'contracts', f'{self.CONTRACT_NAME}.sol', build_info_path)
-
