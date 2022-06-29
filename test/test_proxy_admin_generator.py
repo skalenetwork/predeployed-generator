@@ -25,7 +25,11 @@ class TestProxyAdminGenerator(TestOpenzeppelin):
         class GeneratorWithoutArtifact(OpenzeppelinContractGenerator):
             pass
 
+        class GeneratorWithoutMeta(OpenzeppelinContractGenerator):
+            ARTIFACT_FILENAME = 'test'
+
         with pytest.raises(TypeError):
             GeneratorWithoutArtifact()
 
-
+        with pytest.raises(TypeError):
+            GeneratorWithoutMeta()

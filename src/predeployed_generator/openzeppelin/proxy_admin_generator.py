@@ -16,6 +16,7 @@ class ProxyAdminGenerator(OpenzeppelinContractGenerator):
     '''
 
     ARTIFACT_FILENAME = 'ProxyAdmin.json'
+    META_FILENAME = 'ProxyAdmin.meta.json'
 
     OWNER_SLOT = 0
 

@@ -70,9 +70,10 @@ class TestContractGenerator(TestSolidityProject):
 
         bytecode = '0xbytecode'
         abi = ['function']
+        meta = {'name': 'test'}
         balance = 5
         nonce = 13
-        generator = EmptyGenerator(bytecode, abi)
+        generator = EmptyGenerator(bytecode, abi, meta)
         assert generator.generate(balance=balance, nonce=nonce) == {
             'code': bytecode,
             'nonce': hex(nonce),
@@ -80,6 +81,7 @@ class TestContractGenerator(TestSolidityProject):
             'storage': {}
         }
         assert generator.get_abi() == abi
+        assert generator.get_meta() == meta
 
     def test_non_existent_map_key_type(self):
         with pytest.raises(TypeError):
