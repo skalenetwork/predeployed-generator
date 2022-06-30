@@ -67,6 +67,7 @@ jobs:
     - name: Build pip package
       env:
         VERSION: "0.0.0"
+        PYTHONPATH: ./
       run: ./scripts/build_package.sh
     
     - name: Run tests
