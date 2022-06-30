@@ -14,4 +14,4 @@ then
     cd ..
 fi
 
-ARTIFACTS_DIR=$ARTIFACTS_DIR OZ_PATH="$OPENZEPPELIN_DIR/artifacts/contracts/proxy/transparent/" python $SCRIPT_DIR/generate_meta.py
+ARTIFACTS_DIR=$ARTIFACTS_DIR OZ_PATH="$OPENZEPPELIN_DIR/artifacts/contracts/proxy/transparent/" python $SCRIPT_DIR/prepare_artifacts.py
