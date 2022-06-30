@@ -9,7 +9,7 @@ from test.tools.test_solidity_project import TestSolidityProject
 class TestArtifactsHandler(TestSolidityProject):
 
     def prepare(self):
-        self.hardhat_dir = self.get_artifacts_dir()
+        self.hardhat_dir = os.path.join(self.get_artifacts_dir(), 'contracts')
         self.target_dir = os.path.join(self.hardhat_dir, '..', 'target')
         os.mkdir(self.target_dir)
         self.name = CustomContractGenerator.CONTRACT_NAME
