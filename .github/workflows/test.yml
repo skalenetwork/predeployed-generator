@@ -69,6 +69,11 @@ jobs:
         VERSION: "0.0.0"
         PYTHONPATH: ./
       run: ./scripts/build_package.sh
+
+    - name: Compile test contract
+      run: |
+        cd test/test_solidity_project
+        yarn install
     
     - name: Run tests
       run: |
