@@ -60,6 +60,7 @@ jobs:
 
     - name: Build pip package
       env:
+          PYTHONPATH: ./
           VERSION: ${{ env.VERSION }}
       run: ./scripts/build_package.sh
 
