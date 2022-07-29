@@ -55,13 +55,16 @@ class ContractGenerator:
         self.meta = meta
 
     @staticmethod
-    def from_hardhat_artifact(artifact_filename: str, meta_filename: str) -> ContractGenerator:
+    def from_hardhat_artifact(artifact_filename: str, meta_filename=None) -> ContractGenerator:
         '''Create ContractGenerator from the artifact file built by hardhat'''
         with open(artifact_filename, encoding='utf-8') as artifact_file:
             contract = json.load(artifact_file)
-        with open(meta_filename, encoding='utf-8') as meta_file:
-            meta = json.load(meta_file)
-            return ContractGenerator(contract['deployedBytecode'], contract['abi'], meta)
+        if meta_filename:
+            with open(meta_filename, encoding='utf-8') as meta_file:
+                meta = json.load(meta_file)
+        else:
+            meta = {}
+        return ContractGenerator(contract['deployedBytecode'], contract['abi'], meta)
 
     def generate(self, balance=0, nonce=0, **initial_values) -> Account:
         '''Generate smart contract
