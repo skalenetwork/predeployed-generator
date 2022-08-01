@@ -11,6 +11,10 @@ import shutil
 from os.path import normpath, join
 
 
+class MetaNotFoundException(Exception):
+    pass
+
+
 class ArtifactsHandler:
     """Generate and copy smart contract artifacts in pkg dir"""
 
