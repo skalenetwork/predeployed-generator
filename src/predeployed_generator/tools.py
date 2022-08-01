@@ -12,7 +12,7 @@ from os.path import normpath, join
 
 
 class MetaNotFoundError(Exception):
-    pass
+    """Meta file does not exist"""
 
 
 class ArtifactsHandler:
