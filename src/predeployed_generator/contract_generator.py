@@ -19,7 +19,7 @@ import json
 from typing import Dict, List, Union, Optional
 
 from web3.auto import w3
-from tools import MetaNotFoundError
+from .tools import MetaNotFoundError
 
 
 def to_even_length(hex_string: str) -> str:
