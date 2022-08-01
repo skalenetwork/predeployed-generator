@@ -19,7 +19,7 @@ import json
 from typing import Dict, List, Union, Optional
 
 from web3.auto import w3
-from src.predeployed_generator.tools import MetaNotFoundException
+from src.predeployed_generator.tools import MetaNotFoundError
 
 
 def to_even_length(hex_string: str) -> str:
@@ -113,7 +113,7 @@ class ContractGenerator:
         """Get the smart contract meta info
         """
         if not self.meta:
-            raise MetaNotFoundException()
+            raise MetaNotFoundError()
         return self.meta
 
     # private
@@ -199,14 +199,12 @@ class ContractGenerator:
 
         return int.from_bytes(w3.solidityKeccak([key_type, 'uint256'], [key, slot]), 'big')
 
-
     @staticmethod
     def calculate_array_value_slot(slot: int, index: int) -> int:
         """Calculate slot in smart contract storage
         where value of the array in the index is stored
         """
         return int.from_bytes(w3.solidityKeccak(['uint256'], [slot]), 'big') + index
-
 
     @staticmethod
     def next_slot(previous_slot: int) -> int:

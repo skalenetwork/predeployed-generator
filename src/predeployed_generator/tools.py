@@ -11,7 +11,7 @@ import shutil
 from os.path import normpath, join
 
 
-class MetaNotFoundException(Exception):
+class MetaNotFoundError(Exception):
     pass
 
 
