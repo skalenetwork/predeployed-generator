@@ -98,3 +98,14 @@ class TestContractGenerator(TestSolidityProject):
         assert generator.meta is None
         with pytest.raises(MetaNotFoundError):
             generator.get_meta()
+
+    def test_generator_from_hardhat_artifact(self):
+        class EmptyGenerator(ContractGenerator):
+            pass
+
+        generator = EmptyGenerator.from_hardhat_artifact(
+            self.get_artifacts_path(CustomContractGenerator.CONTRACT_NAME)
+        )
+        assert generator.meta is None
+        with pytest.raises(MetaNotFoundError):
+            generator.get_meta()
