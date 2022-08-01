@@ -1,4 +1,4 @@
-'''contract_generator.py
+"""contract_generator.py
 
 The module is used to generate predeployed smart contracts in genesis block
 
@@ -11,24 +11,25 @@ Functions:
 
 Classes:
     ContractGenerator
-'''
+"""
 
 from __future__ import annotations
 
 import json
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Optional
 
 from web3.auto import w3
+from .tools import MetaNotFoundError
 
 
 def to_even_length(hex_string: str) -> str:
-    '''Modify hex string to have even amount of digits.
+    """Modify hex string to have even amount of digits.
 
     For example:
         "0x0" becomes "0x00"
         "0x123 becomes "0x0123"
         "0x12" stays "0x12"
-    '''
+    """
     assert hex_string.startswith('0x')
     if len(hex_string) % 2 != 0:
         return "0x0" + hex_string[2:]
@@ -36,35 +37,38 @@ def to_even_length(hex_string: str) -> str:
 
 
 def add_0x(bytes_string: str) -> str:
-    '''Add "0x" prefix to the string'''
+    """Add "0x" prefix to the string"""
     if bytes_string.startswith('0x'):
         return bytes_string
     return '0x' + bytes_string
 
 
 class ContractGenerator:
-    '''Generate smart contract allocation in a genesis block'''
+    """Generate smart contract allocation in a genesis block"""
 
     Storage = Dict[str, str]
     Account = Dict[str, Union[str, Storage]]
     Allocation = Dict[str, Account]
 
-    def __init__(self, bytecode: str, abi: list, meta: dict):
+    def __init__(self, bytecode: str, abi: list, meta: Optional[dict] = None):
         self.bytecode = bytecode
         self.abi = abi
         self.meta = meta
 
     @staticmethod
-    def from_hardhat_artifact(artifact_filename: str, meta_filename: str) -> ContractGenerator:
-        '''Create ContractGenerator from the artifact file built by hardhat'''
+    def from_hardhat_artifact(artifact_filename: str,
+                              meta_filename: Optional[str] = None) -> ContractGenerator:
+        """Create ContractGenerator from the artifact file built by hardhat"""
         with open(artifact_filename, encoding='utf-8') as artifact_file:
             contract = json.load(artifact_file)
-        with open(meta_filename, encoding='utf-8') as meta_file:
-            meta = json.load(meta_file)
+        if meta_filename:
+            with open(meta_filename, encoding='utf-8') as meta_file:
+                meta = json.load(meta_file)
             return ContractGenerator(contract['deployedBytecode'], contract['abi'], meta)
+        return ContractGenerator(contract['deployedBytecode'], contract['abi'])
 
     def generate(self, balance=0, nonce=0, **initial_values) -> Account:
-        '''Generate smart contract
+        """Generate smart contract
 
         Returns an object in format:
         {
@@ -73,13 +77,13 @@ class ContractGenerator:
             'code': ... ,
             'storage': ...
         }
-        '''
+        """
         return self._generate(self.generate_storage(**initial_values), balance, nonce)
 
     def generate_allocation(
         self, contract_address: str, balance=0, nonce=0, **args
     ) -> ContractGenerator.Allocation:
-        '''Generate smart contract allocation
+        """Generate smart contract allocation
 
         Returns an object in format:
         {
@@ -90,33 +94,35 @@ class ContractGenerator:
                 'storage': ...
             }
         }
-        '''
+        """
         return {contract_address: self._generate(self.generate_storage(**args), balance, nonce)}
 
     @classmethod
     def generate_storage(cls, **_) -> Storage:
-        '''Generate smart contract storage layout
+        """Generate smart contract storage layout
         based on initial values provided in args
-        '''
+        """
         return {}
 
     def get_abi(self) -> list:
-        '''Get the smart contract ABI
-        '''
+        """Get the smart contract ABI
+        """
         return self.abi
 
     def get_meta(self) -> dict:
-        '''Get the smart contract meta info
-        '''
+        """Get the smart contract meta info
+        """
+        if not self.meta:
+            raise MetaNotFoundError()
         return self.meta
 
     # private
 
     def _generate(self, storage: Storage = None, balance: int = 0, nonce: int = 0) -> Account:
-        '''Produce smart contract allocation object.
+        """Produce smart contract allocation object.
 
         It consists of fields 'code', 'balance', 'nonce' and 'storage'
-        '''
+        """
         assert isinstance(self.bytecode, str)
         assert isinstance(balance, int)
         assert isinstance(nonce, int)
@@ -176,7 +182,7 @@ class ContractGenerator:
             slot: int,
             key: Union[bytes, int, str],
             key_type: str) -> int:
-        '''Calculate slot in smart contract storage where value of the key in mapping is stored'''
+        """Calculate slot in smart contract storage where value of the key in mapping is stored"""
 
         if key_type == 'bytes32':
             assert isinstance(key, bytes)
@@ -193,16 +199,14 @@ class ContractGenerator:
 
         return int.from_bytes(w3.solidityKeccak([key_type, 'uint256'], [key, slot]), 'big')
 
-
     @staticmethod
     def calculate_array_value_slot(slot: int, index: int) -> int:
-        '''Calculate slot in smart contract storage
+        """Calculate slot in smart contract storage
         where value of the array in the index is stored
-        '''
+        """
         return int.from_bytes(w3.solidityKeccak(['uint256'], [slot]), 'big') + index
-
 
     @staticmethod
     def next_slot(previous_slot: int) -> int:
-        '''Return next slot in smart contract storage'''
+        """Return next slot in smart contract storage"""
         return previous_slot + 1

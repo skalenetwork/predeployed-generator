@@ -1,6 +1,7 @@
 import pytest
 from web3.auto import w3
 
+from src.predeployed_generator.tools import MetaNotFoundError
 from .tools.custom_contract_generator import CustomContractGenerator
 from .tools.test_solidity_project import TestSolidityProject
 from src.predeployed_generator.contract_generator import ContractGenerator
@@ -86,3 +87,25 @@ class TestContractGenerator(TestSolidityProject):
     def test_non_existent_map_key_type(self):
         with pytest.raises(TypeError):
             ContractGenerator.calculate_mapping_value_slot(0, 'key', 'nonexistent')
+
+    def test_generator_without_meta(self):
+        class EmptyGenerator(ContractGenerator):
+            pass
+
+        bytecode = '0xbytecode'
+        abi = ['function']
+        generator = EmptyGenerator(bytecode, abi)
+        assert generator.meta is None
+        with pytest.raises(MetaNotFoundError):
+            generator.get_meta()
+
+    def test_generator_from_hardhat_artifact(self):
+        class EmptyGenerator(ContractGenerator):
+            pass
+
+        generator = EmptyGenerator.from_hardhat_artifact(
+            self.get_artifacts_path(CustomContractGenerator.CONTRACT_NAME)
+        )
+        assert generator.meta is None
+        with pytest.raises(MetaNotFoundError):
+            generator.get_meta()
