@@ -41,7 +41,7 @@ class TestTransparentUpgradeableProxyGenerator(TestOpenzeppelin):
         genesis = self.prepare_genesis()
 
         with self.run_geth(tmpdir, genesis):
-            assert w3.isConnected()
+            assert w3.is_connected()
             
             proxy_admin = w3.eth.contract(address=self.PROXY_ADMIN_ADDRESS, abi=self.get_proxy_admin_abi())
             assert proxy_admin.functions.getProxyAdmin(self.PROXY_ADDRESS).call() == self.PROXY_ADMIN_ADDRESS
@@ -51,7 +51,7 @@ class TestTransparentUpgradeableProxyGenerator(TestOpenzeppelin):
         genesis = self.prepare_genesis()
 
         with self.run_geth(tmpdir, genesis):
-            assert w3.isConnected()
+            assert w3.is_connected()
             
             proxy_admin = w3.eth.contract(address=self.PROXY_ADMIN_ADDRESS, abi=self.get_proxy_admin_abi())
             assert proxy_admin.functions.getProxyImplementation(self.PROXY_ADDRESS).call() == self.IMPLEMENTATION_ADDRESS
@@ -71,7 +71,7 @@ class TestTransparentUpgradeableProxyGenerator(TestOpenzeppelin):
         })
 
         with self.run_geth(tmpdir, genesis):
-            assert w3.isConnected()
+            assert w3.is_connected()
             
             proxy_admin = w3.eth.contract(address=self.PROXY_ADMIN_ADDRESS, abi=self.get_proxy_admin_abi())
             assert proxy_admin.functions.getProxyImplementation(self.PROXY_ADDRESS).call() == self.PROXY_ADDRESS_HASH
@@ -81,7 +81,7 @@ class TestTransparentUpgradeableProxyGenerator(TestOpenzeppelin):
         genesis = self.prepare_genesis()
 
         with self.run_geth(tmpdir, genesis):
-            assert w3.isConnected()
+            assert w3.is_connected()
             
             proxy_admin = w3.eth.contract(address=self.PROXY_ADDRESS, abi=self.get_proxy_admin_abi())
             assert proxy_admin.functions.owner().call() == self.OWNER_ADDRESS
@@ -112,7 +112,7 @@ class TestTransparentUpgradeableProxyGenerator(TestOpenzeppelin):
         })
 
         with self.run_geth(tmpdir, genesis):
-            assert w3.isConnected()
+            assert w3.is_connected()
             
             assert w3.eth.get_balance(self.PROXY_ADDRESS) == balance
             assert w3.eth.get_transaction_count(self.PROXY_ADDRESS) == nonce

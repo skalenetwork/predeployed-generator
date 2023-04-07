@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 set -e
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 cd "$(dirname "$0")/.."
 ARTIFACTS_DIR="src/predeployed_generator/openzeppelin/artifacts/"
@@ -12,5 +13,5 @@ then
     npm install
     cd ..
 fi
-cp -v "$OPENZEPPELIN_DIR/artifacts/contracts/proxy/transparent/ProxyAdmin.sol/ProxyAdmin.json" $ARTIFACTS_DIR
-cp -v "$OPENZEPPELIN_DIR/artifacts/contracts/proxy/transparent/TransparentUpgradeableProxy.sol/TransparentUpgradeableProxy.json" $ARTIFACTS_DIR
+
+ARTIFACTS_DIR=$ARTIFACTS_DIR OZ_PATH="$OPENZEPPELIN_DIR/artifacts/contracts/proxy/transparent/" python $SCRIPT_DIR/prepare_artifacts.py

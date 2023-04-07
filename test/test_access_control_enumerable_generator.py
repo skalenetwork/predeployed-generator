@@ -26,7 +26,7 @@ class TestAccessControlEnumerableGenerator(TestSolidityProject):
         genesis = self.prepare_genesis()
 
         with self.run_geth(tmpdir, genesis):
-            assert w3.isConnected()
+            assert w3.is_connected()
 
             test_contract = w3.eth.contract(address=self.CONTRACT_ADDRESS, abi=self.get_test_contract_abi())
             assert test_contract.functions.getRoleMemberCount(CustomContractGenerator.DEFAULT_ADMIN_ROLE).call() == 1
@@ -38,7 +38,7 @@ class TestAccessControlEnumerableGenerator(TestSolidityProject):
         genesis = self.prepare_genesis()
 
         with self.run_geth(tmpdir, genesis):
-            assert w3.isConnected()
+            assert w3.is_connected()
 
             test_contract = w3.eth.contract(address=self.CONTRACT_ADDRESS, abi=self.get_test_contract_abi())
             assert test_contract.functions.getRoleMemberCount(CustomContractGenerator.TESTER_ROLE).call() == 2
