@@ -16,7 +16,7 @@ class TestProxyAdminGenerator(TestOpenzeppelin):
         proxy_admin_address = '0xd200000000000000000000000000000000000001'
         generator = ProxyAdminGenerator()
         with self.run_geth(tmpdir, self.generate_genesis({proxy_admin_address: generator.generate(owner_address=owner_address)})):
-            assert w3.isConnected()
+            assert w3.is_connected()
             
             proxy_admin = w3.eth.contract(address=proxy_admin_address, abi=self.get_proxy_admin_abi())
             assert proxy_admin.functions.owner().call() == owner_address
@@ -25,7 +25,11 @@ class TestProxyAdminGenerator(TestOpenzeppelin):
         class GeneratorWithoutArtifact(OpenzeppelinContractGenerator):
             pass
 
+        class GeneratorWithoutMeta(OpenzeppelinContractGenerator):
+            ARTIFACT_FILENAME = 'test'
+
         with pytest.raises(TypeError):
             GeneratorWithoutArtifact()
 
-
+        with pytest.raises(TypeError):
+            GeneratorWithoutMeta()

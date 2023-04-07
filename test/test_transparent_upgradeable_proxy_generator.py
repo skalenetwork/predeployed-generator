@@ -40,7 +40,7 @@ class TestTransparentUpgradeableProxyGenerator(TestOpenzeppelin):
         genesis = self.prepare_genesis()
 
         with self.run_geth(tmpdir, genesis):
-            assert w3.isConnected()
+            assert w3.is_connected()
             
             proxy_admin = w3.eth.contract(address=self.PROXY_ADMIN_ADDRESS, abi=self.get_proxy_admin_abi())
             assert proxy_admin.functions.getProxyAdmin(self.PROXY_ADDRESS).call() == self.PROXY_ADMIN_ADDRESS
@@ -50,7 +50,7 @@ class TestTransparentUpgradeableProxyGenerator(TestOpenzeppelin):
         genesis = self.prepare_genesis()
 
         with self.run_geth(tmpdir, genesis):
-            assert w3.isConnected()
+            assert w3.is_connected()
             
             proxy_admin = w3.eth.contract(address=self.PROXY_ADMIN_ADDRESS, abi=self.get_proxy_admin_abi())
             assert proxy_admin.functions.getProxyImplementation(self.PROXY_ADDRESS).call() == self.IMPLEMENTATION_ADDRESS 

@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ["3.7.x", "3.8.x", "3.9.x"]
+        python-version: ["3.7.x", "3.8.x", "3.9.x", "3.10.x", "3.11.x"]
 
     steps:
     - uses: actions/checkout@v2
@@ -67,7 +67,13 @@ jobs:
     - name: Build pip package
       env:
         VERSION: "0.0.0"
+        PYTHONPATH: ./
       run: ./scripts/build_package.sh
+
+    - name: Compile test contract
+      run: |
+        cd test/test_solidity_project
+        yarn install
     
     - name: Run tests
       run: |
