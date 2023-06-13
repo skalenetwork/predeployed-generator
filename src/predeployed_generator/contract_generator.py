@@ -215,3 +215,8 @@ class ContractGenerator:
     def next_slot(previous_slot: int) -> int:
         """Return next slot in smart contract storage"""
         return previous_slot + 1
+
+    @staticmethod
+    def calculate_keccak(abi_types: List, values: List) -> bytes:
+        """Calculate keccak hash"""
+        return w3.solidity_keccak(abi_types, values)
