@@ -109,3 +109,10 @@ class TestContractGenerator(TestSolidityProject):
         assert generator.meta is None
         with pytest.raises(MetaNotFoundError):
             generator.get_meta()
+
+    def test_keccak_calculation(self):
+        class EmptyGenerator(ContractGenerator):
+            pass
+
+        web3_keccak = w3.solidity_keccak(['address'], [self.OWNER_ADDRESS])
+        assert EmptyGenerator.calculate_keccak(['address'], [self.OWNER_ADDRESS]) == web3_keccak
