@@ -12,7 +12,7 @@
     "prepare": "yarn compile"
   },
   "devDependencies": {
-    "hardhat": "^2.19.4",
+    "hardhat": "^2.22.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   },
