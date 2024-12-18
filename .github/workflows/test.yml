@@ -19,6 +19,7 @@ jobs:
     - name: Install NODE JS
       uses: actions/setup-node@v2
       with:
+        cache-dependency-path: test/test_solidity_project/yarn.lock
         node-version: 18
         cache: 'yarn'
 
