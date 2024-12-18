@@ -54,8 +54,8 @@ jobs:
       run: ./scripts/build_package.sh
 
     - name: Compile test contract
+      working-directory: test/test_solidity_project
       run: |
-        cd test/test_solidity_project
         yarn install
 
     - name: Run tests
