@@ -14,7 +14,7 @@
   "devDependencies": {
     "hardhat": "^2.22.18",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.8.3"
   },
   "dependencies": {
     "@openzeppelin/contracts-upgradeable": "^4.9.6"
